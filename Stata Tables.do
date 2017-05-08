@@ -22,6 +22,16 @@ label variable bp_diff "Difference in BP"
 *installation of estout package
 ssc install estout, replace
 
+*Total N
+count if bp_before != . & bp_after != .
+local ntotal = r(N)
+global totn = r(N)
+
+*Intervention and Control N
+count if intervention == 1
+local nintervention = r(N)
+local ncontrol = `ntotal' - r(N)
+
 *Variables to Store results
 gen str12 rowname = ""
 gen control1 = .
@@ -53,11 +63,9 @@ foreach var of global catlist {
 		qui count if `var' == `lev' & intervention == 0
 		replace control1 = r(N) if nn ==  $rowct
 		replace control2 = r(N)/$totn if nn == $rowct
-		
 		qui count if `var'== `lev' & intervention == 1
 		replace int1 = r(N) if nn == $rowct
 		replace int2 = r(N)/$totn if nn == $rowct
-		
 		global rowct = $rowct + 1
 	}
 	}
